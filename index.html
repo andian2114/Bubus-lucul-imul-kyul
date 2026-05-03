@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; color: white; font-family: sans-serif; }
+        #text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none; width: 100%;
+        }
+        h1 { font-size: 2.5rem; letter-spacing: 5px; text-shadow: 0 0 15px red; margin: 0; }
+        p { opacity: 0.6; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div id="text">
+        <h1>ONLY FOR YOU</h1>
+        <p>Sentuh layar untuk putar galaksi</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene = new THREE.Scene();
+        let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        let renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Galaksi Bintang
+        let geo = new THREE.BufferGeometry();
+        let counts = 3000;
+        let pos = new Float32Array(counts * 3);
+        for(let i=0; i<counts*3; i++) pos[i] = (Math.random()-0.5)*100;
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        let mat = new THREE.PointsMaterial({ size: 0.1, color: 0xffffff });
+        let stars = new THREE.Points(geo, mat);
+        scene.add(stars);
+
+        // Bola Merah Tengah
+        let globeGeo = new THREE.SphereGeometry(2, 32, 32);
+        let globeMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+        let globe = new THREE.Mesh(globeGeo, globeMat);
+        scene.add(globe);
+
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.y += 0.001;
+            globe.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Supaya bisa digeser di HP
+        document.addEventListener('touchmove', (e) => {
+            let touch = e.touches[0];
+            stars.rotation.x = touch.pageY * 0.005;
+            stars.rotation.y = touch.pageX * 0.005;
+        });
+    </script>
+</body>
+</html>
