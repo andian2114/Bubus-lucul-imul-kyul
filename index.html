@@ -29,10 +29,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // 1. SETTING KAMERA (EFEK ZOOM-IN)
         camera.position.z = 60; 
 
-        // 2. BINTANG-BINTANG (LATAR BELAKANG)
         let starGeo = new THREE.BufferGeometry();
         let starCount = 5000;
         let starPos = new Float32Array(starCount * 3);
@@ -41,56 +39,50 @@
         let stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, color: 0xffffff }));
         scene.add(stars);
 
-        // 3. BOLA MERAH DI TENGAH
         let globe = new THREE.Mesh(
             new THREE.SphereGeometry(2, 32, 32), 
             new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
         );
         scene.add(globe);
 
-        // 4. BAGIAN FOTO (GANTI LINK DI BAWAH INI)
+        // LINK SUDAH DIPERBAIKI (HANYA LINK LANGSUNG)
         const fotoUrls = [
-            'https://ibb.co.com/DDjV64QC"><img src="https://i.ibb.co.com/d0HW3BD2/Screenshot-20260503-161215.jpg', // Ganti dengan Direct Link dari Postimages
-            'https://ibb.co.com/hxDmtxpZ"><img src="https://i.ibb.co.com/TDmgFDzb/IMG-20260116-130706-Burst20.jpg',
-            'https://ibb.co.com/JRYJhq3v"><img src="https://i.ibb.co.com/mCnWx0N9/IMG-20260127-113943.jpg',
-            'https://ibb.co.com/xK2kRrg5"><img src="https://i.ibb.co.com/JWc1MSpk/IMG-20260210-061811.jpg',
+            'https://i.ibb.co.com/d0HW3BD2/Screenshot-20260503-161215.jpg',
+            'https://i.ibb.co.com/TDmgFDzb/IMG-20260116-130706-Burst20.jpg',
+            'https://i.ibb.co.com/mCnWx0N9/IMG-20260127-113943.jpg',
+            'https://i.ibb.co.com/JWc1MSpk/IMG-20260210-061811.jpg',
             'https://i.ibb.co.com/LzB13JHp/IMG-20260213-144408.jpg',
-            'https://ibb.co.com/YFhQdn8S"><img src="https://i.ibb.co.com/C3Q89Cvy/IMG-20260314-152509.jpg',
-            'https://ibb.co.com/hxYLM74L"><img src="https://i.ibb.co.com/twLQhmvQ/IMG-20260327-070920.jpg',
-            'https://ibb.co.com/0RvMMS9k"><img src="https://i.ibb.co.com/39QNNqFw/IMG-20260426-131810.jpg',
-            'https://ibb.co.com/tFvG0H1"><img src="https://i.ibb.co.com/Td7fQwN/IMG-20251117-WA0016.jpg',
-            'https://ibb.co.com/KcDCVHZp"><img src="https://i.ibb.co.com/LDr49fwX/IMG-20251207-113438.jpg'
-            'https://ibb.co.com/pj8W8mvw"><img src="https://i.ibb.co.com/jk2V2pvf/IMG-20251117-WA0015.jpg'
+            'https://i.ibb.co.com/C3Q89Cvy/IMG-20260314-152509.jpg',
+            'https://i.ibb.co.com/twLQhmvQ/IMG-20260327-070920.jpg',
+            'https://i.ibb.co.com/39QNNqFw/IMG-20260426-131810.jpg',
+            'https://i.ibb.co.com/Td7fQwN/IMG-20251117-WA0016.jpg',
+            'https://i.ibb.co.com/LDr49fwX/IMG-20251207-113438.jpg',
+            'https://i.ibb.co.com/jk2V2pvf/IMG-20251117-WA0015.jpg',
             'https://i.ibb.co.com/VcX367vw/IMG-20250520-115436.jpg'
         ];
 
         const loader = new THREE.TextureLoader();
         fotoUrls.forEach((url) => {
-            if(url.includes('http')) { // Cek apakah link sudah diisi
-                loader.load(url, (texture) => {
-                    const mesh = new THREE.Mesh(
-                        new THREE.PlaneGeometry(4, 4), 
-                        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-                    );
-                    // Sebar posisi foto secara acak
-                    mesh.position.set((Math.random()-0.5)*40, (Math.random()-0.5)*40, (Math.random()-0.5)*30);
-                    mesh.lookAt(0, 0, 0);
-                    scene.add(mesh);
-                });
-            }
+            loader.load(url, (texture) => {
+                const mesh = new THREE.Mesh(
+                    new THREE.PlaneGeometry(4, 4), 
+                    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+                );
+                mesh.position.set((Math.random()-0.5)*45, (Math.random()-0.5)*45, (Math.random()-0.5)*35);
+                mesh.lookAt(0, 0, 0);
+                scene.add(mesh);
+            });
         });
 
-        // 5. ANIMASI
         function animate() {
             requestAnimationFrame(animate);
-            if (camera.position.z > 18) camera.position.z -= 0.2; // Efek maju perlahan
+            if (camera.position.z > 20) camera.position.z -= 0.2; 
             stars.rotation.y += 0.0005;
             globe.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
 
-        // KONTROL SENTUH HP
         document.addEventListener('touchmove', (e) => {
             let touch = e.touches[0];
             scene.rotation.y = (touch.pageX / window.innerWidth - 0.5) * 2;
