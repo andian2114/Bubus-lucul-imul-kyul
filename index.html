@@ -12,12 +12,11 @@
         }
         h1 { font-size: 2.2rem; letter-spacing: 5px; text-shadow: 0 0 15px #ff0000; margin: 0; font-weight: bold; }
         p { opacity: 0.6; font-size: 0.8rem; margin-top: 10px; letter-spacing: 2px; }
-        /* Tombol Start biar suara pasti nyala */
         #btn-play {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-            padding: 15px 30px; background: rgba(255,0,0,0.5); color: white;
-            border: 2px solid white; border-radius: 30px; cursor: pointer; z-index: 100;
-            font-weight: bold; backdrop-filter: blur(5px);
+            padding: 15px 30px; background: #ff0000; color: white;
+            border: none; border-radius: 30px; cursor: pointer; z-index: 100;
+            font-weight: bold; box-shadow: 0 0 20px rgba(255,0,0,0.5);
         }
     </style>
 </head>
@@ -25,13 +24,13 @@
 
     <div id="text">
         <h1>ONLY FOR BUBUS GENDOT LUCUL IMUL KYUL</h1>
-        <p id="sub-text">Bentuk Cinta - Eclat Story</p>
+        <p id="sub-text">Klik tombol di bawah untuk musik</p>
     </div>
 
-    <button id="btn-play">KLIK UNTUK MUSIK 🎵</button>
+    <button id="btn-play">PUTAR MUSIK 🎵</button>
 
-    <audio id="loveSong" loop>
-        <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_180873747b.mp3" type="audio/mpeg">
+    <audio id="loveSong" crossorigin="anonymous" loop>
+        <source src="https://files.catbox.moe/978pky.mp3" type="audio/mpeg">
     </audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -44,6 +43,7 @@
 
         camera.position.z = 60; 
 
+        // Bintang & Globe
         let starGeo = new THREE.BufferGeometry();
         let starCount = 5000;
         let starPos = new Float32Array(starCount * 3);
@@ -52,12 +52,10 @@
         let stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, color: 0xffffff }));
         scene.add(stars);
 
-        let globe = new THREE.Mesh(
-            new THREE.SphereGeometry(2, 32, 32), 
-            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
-        );
+        let globe = new THREE.Mesh(new THREE.SphereGeometry(2, 32, 32), new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }));
         scene.add(globe);
 
+        // Foto-foto (Ukuran Gede & Random)
         const fotoUrls = [
             'https://i.ibb.co.com/d0HW3BD2/Screenshot-20260503-161215.jpg',
             'https://i.ibb.co.com/TDmgFDzb/IMG-20260116-130706-Burst20.jpg',
@@ -76,11 +74,8 @@
         const loader = new THREE.TextureLoader();
         fotoUrls.forEach((url) => {
             loader.load(url, (texture) => {
-                const randomSize = 5 + Math.random() * 8; // Fotonya digedein lagi sesuai request
-                const mesh = new THREE.Mesh(
-                    new THREE.PlaneGeometry(randomSize, randomSize), 
-                    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-                );
+                const randomSize = 6 + Math.random() * 8; 
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(randomSize, randomSize), new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }));
                 mesh.position.set((Math.random()-0.5)*60, (Math.random()-0.5)*60, (Math.random()-0.5)*45);
                 mesh.lookAt(0, 0, 0);
                 scene.add(mesh);
@@ -89,21 +84,30 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if (camera.position.z > 30) camera.position.z -= 0.1; 
+            if (camera.position.z > 35) camera.position.z -= 0.1; 
             stars.rotation.y += 0.0005;
             globe.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
 
-        // KONTROL MUSIC DENGAN TOMBOL
+        // LOGIKA MUSIK
         const audio = document.getElementById('loveSong');
         const playBtn = document.getElementById('btn-play');
 
         playBtn.addEventListener('click', () => {
-            audio.play();
-            playBtn.style.display = 'none'; // Tombol ilang setelah diklik
-            document.getElementById('sub-text').innerHTML = "Geser layarnya untuk memutar momen kita";
+            // Coba putar musik
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    playBtn.style.display = 'none';
+                    document.getElementById('sub-text').innerHTML = "Bentuk Cinta - Eclat Story";
+                }).catch(error => {
+                    alert("Gagal putar musik: " + error);
+                    console.log("Error:", error);
+                });
+            }
         });
 
         document.addEventListener('touchmove', (e) => {
