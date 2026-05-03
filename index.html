@@ -12,17 +12,26 @@
         }
         h1 { font-size: 2.2rem; letter-spacing: 5px; text-shadow: 0 0 15px #ff0000; margin: 0; font-weight: bold; }
         p { opacity: 0.6; font-size: 0.8rem; margin-top: 10px; letter-spacing: 2px; }
+        /* Tombol Start biar suara pasti nyala */
+        #btn-play {
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+            padding: 15px 30px; background: rgba(255,0,0,0.5); color: white;
+            border: 2px solid white; border-radius: 30px; cursor: pointer; z-index: 100;
+            font-weight: bold; backdrop-filter: blur(5px);
+        }
     </style>
 </head>
 <body>
 
     <div id="text">
-        <h1>ONLY FOR BUBUS LUCUL IMUL KYUL</h1>
-        <p>Sentuh untuk mulai galaksi & musik</p>
+        <h1>ONLY FOR YOU</h1>
+        <p id="sub-text">Bentuk Cinta - Eclat Story</p>
     </div>
 
+    <button id="btn-play">KLIK UNTUK MUSIK 🎵</button>
+
     <audio id="loveSong" loop>
-        <source src="https://files.catbox.moe/978pky.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_180873747b.mp3" type="audio/mpeg">
     </audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -67,13 +76,12 @@
         const loader = new THREE.TextureLoader();
         fotoUrls.forEach((url) => {
             loader.load(url, (texture) => {
-                // UKURAN RANDOM (Ada yang kecil 4, ada yang besar sampai 10)
-                const randomSize = 4 + Math.random() * 6;
+                const randomSize = 5 + Math.random() * 8; // Fotonya digedein lagi sesuai request
                 const mesh = new THREE.Mesh(
                     new THREE.PlaneGeometry(randomSize, randomSize), 
                     new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
                 );
-                mesh.position.set((Math.random()-0.5)*50, (Math.random()-0.5)*50, (Math.random()-0.5)*40);
+                mesh.position.set((Math.random()-0.5)*60, (Math.random()-0.5)*60, (Math.random()-0.5)*45);
                 mesh.lookAt(0, 0, 0);
                 scene.add(mesh);
             });
@@ -81,23 +89,21 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if (camera.position.z > 25) camera.position.z -= 0.15; 
+            if (camera.position.z > 30) camera.position.z -= 0.1; 
             stars.rotation.y += 0.0005;
             globe.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
 
-        // KONTROL MUSIC & TOUCH
-        let musicStarted = false;
+        // KONTROL MUSIC DENGAN TOMBOL
         const audio = document.getElementById('loveSong');
+        const playBtn = document.getElementById('btn-play');
 
-        document.addEventListener('touchstart', () => {
-            if(!musicStarted) {
-                audio.play();
-                musicStarted = true;
-                document.querySelector('p').innerHTML = "Geser untuk memutar dunia kita";
-            }
+        playBtn.addEventListener('click', () => {
+            audio.play();
+            playBtn.style.display = 'none'; // Tombol ilang setelah diklik
+            document.getElementById('sub-text').innerHTML = "Geser layarnya untuk memutar momen kita";
         });
 
         document.addEventListener('touchmove', (e) => {
