@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My Love</title>
+    <title>For My Universe</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
         #text {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; pointer-events: none; width: 100%; color: white;
-            z-index: 10;
+            text-align: center; pointer-events: none; width: 100%; color: white; z-index: 10;
         }
-        h1 { font-size: 2rem; letter-spacing: 5px; text-shadow: 0 0 15px red; margin: 0; }
-        p { opacity: 0.5; font-size: 0.8rem; margin-top: 10px; }
+        h1 { font-size: 2.2rem; letter-spacing: 5px; text-shadow: 0 0 15px #ff0000; margin: 0; font-weight: bold; }
+        p { opacity: 0.6; font-size: 0.8rem; margin-top: 10px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
+
     <div id="text">
-        <h1 id="title">ONLY FOR BUBU LUCUL IMUL KYUL</h1>
+        <h1>ONLY FOR YOU</h1>
         <p>Sentuh & putar galaksinya</p>
     </div>
 
@@ -29,60 +29,76 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // 1. ANIMASI MASUK (Zoom In)
-        camera.position.z = 50; // Mulai dari jauh
+        // 1. SETTING KAMERA (EFEK ZOOM-IN)
+        camera.position.z = 60; 
 
-        // 2. BINTANG & BOLA TENGAH
-        let geo = new THREE.BufferGeometry();
-        let counts = 4000;
-        let pos = new Float32Array(counts * 3);
-        for(let i=0; i<counts*3; i++) pos[i] = (Math.random()-0.5)*150;
-        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        let stars = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.1, color: 0xffffff }));
+        // 2. BINTANG-BINTANG (LATAR BELAKANG)
+        let starGeo = new THREE.BufferGeometry();
+        let starCount = 5000;
+        let starPos = new Float32Array(starCount * 3);
+        for(let i=0; i<starCount*3; i++) starPos[i] = (Math.random()-0.5)*150;
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        let stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, color: 0xffffff }));
         scene.add(stars);
 
-        let globe = new THREE.Mesh(new THREE.SphereGeometry(2, 32, 32), new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }));
+        // 3. BOLA MERAH DI TENGAH
+        let globe = new THREE.Mesh(
+            new THREE.SphereGeometry(2, 32, 32), 
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+        );
         scene.add(globe);
 
-        // 3. TAMBAH FOTO MELAYANG (Contoh 3 Foto)
-        // Ganti URL di bawah dengan link foto pasanganmu (bisa dari IG/FB atau upload ke postimages.org)
+        // 4. BAGIAN FOTO (GANTI LINK DI BAWAH INI)
         const fotoUrls = [
-            'https://picsum.photos/200/200?random=1', 
-            'https://picsum.photos/200/200?random=2',
-            'https://picsum.photos/200/200?random=3'
+            'https://ibb.co.com/DDjV64QC', // Ganti dengan Direct Link dari Postimages
+            'LINK_FOTO_2',
+            'LINK_FOTO_3',
+            'LINK_FOTO_4',
+            'LINK_FOTO_5',
+            'LINK_FOTO_6',
+            'LINK_FOTO_7',
+            'LINK_FOTO_8',
+            'LINK_FOTO_9',
+            'LINK_FOTO_10'
         ];
 
         const loader = new THREE.TextureLoader();
         fotoUrls.forEach((url) => {
-            loader.load(url, (texture) => {
-                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-                const geometry = new THREE.PlaneGeometry(3, 3);
-                const mesh = new THREE.Mesh(geometry, material);
-                
-                // Sebar foto secara acak di sekitar bola
-                mesh.position.set((Math.random()-0.5)*20, (Math.random()-0.5)*20, (Math.random()-0.5)*20);
-                mesh.lookAt(0, 0, 0);
-                scene.add(mesh);
-            });
+            if(url.includes('http')) { // Cek apakah link sudah diisi
+                loader.load(url, (texture) => {
+                    const mesh = new THREE.Mesh(
+                        new THREE.PlaneGeometry(4, 4), 
+                        new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+                    );
+                    // Sebar posisi foto secara acak
+                    mesh.position.set((Math.random()-0.5)*40, (Math.random()-0.5)*40, (Math.random()-0.5)*30);
+                    mesh.lookAt(0, 0, 0);
+                    scene.add(mesh);
+                });
+            }
         });
 
+        // 5. ANIMASI
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Efek Zoom In pelan saat pertama buka
-            if (camera.position.z > 15) camera.position.z -= 0.3;
-
-            stars.rotation.y += 0.001;
+            if (camera.position.z > 18) camera.position.z -= 0.2; // Efek maju perlahan
+            stars.rotation.y += 0.0005;
             globe.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
 
-        // Touch Control
+        // KONTROL SENTUH HP
         document.addEventListener('touchmove', (e) => {
             let touch = e.touches[0];
-            scene.rotation.y = touch.pageX * 0.01;
-            scene.rotation.x = touch.pageY * 0.01;
+            scene.rotation.y = (touch.pageX / window.innerWidth - 0.5) * 2;
+            scene.rotation.x = (touch.pageY / window.innerHeight - 0.5) * 2;
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
