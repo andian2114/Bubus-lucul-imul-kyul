@@ -17,9 +17,13 @@
 <body>
 
     <div id="text">
-        <h1>ONLY FOR BUBUS LUCUL IMUL KYUL</h1>
-        <p>Sentuh & putar galaksinya</p>
+        <h1>ONLY FOR YOU</h1>
+        <p>Sentuh untuk mulai galaksi & musik</p>
     </div>
+
+    <audio id="loveSong" loop>
+        <source src="https://files.catbox.moe/978pky.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -45,7 +49,6 @@
         );
         scene.add(globe);
 
-        // LINK SUDAH DIPERBAIKI (HANYA LINK LANGSUNG)
         const fotoUrls = [
             'https://i.ibb.co.com/d0HW3BD2/Screenshot-20260503-161215.jpg',
             'https://i.ibb.co.com/TDmgFDzb/IMG-20260116-130706-Burst20.jpg',
@@ -64,11 +67,13 @@
         const loader = new THREE.TextureLoader();
         fotoUrls.forEach((url) => {
             loader.load(url, (texture) => {
+                // UKURAN RANDOM (Ada yang kecil 4, ada yang besar sampai 10)
+                const randomSize = 4 + Math.random() * 6;
                 const mesh = new THREE.Mesh(
-                    new THREE.PlaneGeometry(4, 4), 
+                    new THREE.PlaneGeometry(randomSize, randomSize), 
                     new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
                 );
-                mesh.position.set((Math.random()-0.5)*45, (Math.random()-0.5)*45, (Math.random()-0.5)*35);
+                mesh.position.set((Math.random()-0.5)*50, (Math.random()-0.5)*50, (Math.random()-0.5)*40);
                 mesh.lookAt(0, 0, 0);
                 scene.add(mesh);
             });
@@ -76,12 +81,24 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if (camera.position.z > 20) camera.position.z -= 0.2; 
+            if (camera.position.z > 25) camera.position.z -= 0.15; 
             stars.rotation.y += 0.0005;
             globe.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
+
+        // KONTROL MUSIC & TOUCH
+        let musicStarted = false;
+        const audio = document.getElementById('loveSong');
+
+        document.addEventListener('touchstart', () => {
+            if(!musicStarted) {
+                audio.play();
+                musicStarted = true;
+                document.querySelector('p').innerHTML = "Geser untuk memutar dunia kita";
+            }
+        });
 
         document.addEventListener('touchmove', (e) => {
             let touch = e.touches[0];
